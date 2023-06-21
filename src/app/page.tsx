@@ -8,7 +8,6 @@ import { nanoid } from "nanoid"
 import { updateElementProperty, updateElementStyleProperty } from "@/utility"
 import TextElement from "@/components/TextElement"
 import html2canvas from "html2canvas"
-import { toJpeg } from "html-to-image"
 
 const initialState: State = {
   imagePreview: "",
@@ -114,14 +113,17 @@ export default function Home() {
 
   const downloadImageHandler = () => {
     if (storyRef.current && imageLoaded) {
-      toJpeg(storyRef.current)
-        .then((dataUrl) => {
+      html2canvas(storyRef.current)
+        .then((canvas) => {
+          const dataUrl = canvas.toDataURL()
           const link = document.createElement("a")
           link.href = dataUrl
-          link.download = "story.jpeg"
+          link.download = "story.png"
           link.click()
         })
-        .catch((error) => console.log(error))
+        .catch((error) => {
+          console.error("Error generating image:", error)
+        })
     }
   }
 
